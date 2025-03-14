@@ -18,11 +18,3 @@ repos:
     rev: 0.6.5
     hooks:
       - id: uv-lock
-      - id: uv-export
-        args:
-          - --frozen
-          - --no-emit-project
-          - --all-extras
-          - --all-groups
-          - --output-file=requirements-dependabot.txt
-        files: pyproject.toml|uv.lock
