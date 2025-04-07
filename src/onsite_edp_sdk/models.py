@@ -13,7 +13,8 @@ class Order(BaseModel):
     # ID
     external_order_id: str = Field(serialization_alias="ExtOrderID")
     external_source: str | None = Field(None, serialization_alias="ExtSource")
-    date_external: str = Field(pattern=DATE_REGEX, serialization_alias="date_External")
+    # Per upstream documentation, date_external is required, but we're currently processing orders without it.
+    date_external: str|None = Field(None, pattern=DATE_REGEX, serialization_alias="date_External")
     order_type_id: int = Field(serialization_alias="id_OrderType")
 
     # Details
