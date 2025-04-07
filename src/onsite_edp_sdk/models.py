@@ -15,7 +15,7 @@ class Order(BaseModel):
     external_source: str | None = Field(None, serialization_alias="ExtSource")
     # Per upstream documentation, date_external is required, but we're currently processing orders without it.
     date_external: str|None = Field(None, pattern=DATE_REGEX, serialization_alias="date_External")
-    order_type_id: int = Field(serialization_alias="id_OrderType")
+    order_type_id: float = Field(serialization_alias="id_OrderType")
 
     # Details
     customer_purchase_order: str | None = Field(None, serialization_alias="CustomerPurchaseOrder")
