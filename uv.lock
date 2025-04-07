@@ -346,7 +346,7 @@ requires-dist = [
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.10.1" },
     { name = "nox", marker = "extra == 'dev'", specifier = ">=2024.4.15" },
     { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=3.7.1" },
-    { name = "pydantic", specifier = "==2.11.1" },
+    { name = "pydantic", specifier = ">=2.9.2" },
     { name = "pytest", marker = "extra == 'tests'", specifier = ">=8.2.2" },
     { name = "pytest-randomly", marker = "extra == 'tests'", specifier = ">=3.15.0" },
     { name = "releases", marker = "extra == 'docs'", specifier = ">=2.1.1" },

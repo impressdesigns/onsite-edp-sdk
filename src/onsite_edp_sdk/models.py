@@ -275,22 +275,20 @@ class EDPDocument(BaseModel):
         text = ""
 
         for block_name in data:
-            block_name = block_name.removesuffix("s")  # noqa: PLW2901
-
             block_data = data[block_name]
             if not isinstance(block_data, list):
                 block_data = [block_data]
 
             for block in block_data:
                 block_text = ""
-                block_text += f"{tag_bracket} Start {block_name.title()} {tag_bracket}\n"
+                block_text += f"{tag_bracket} Start {block_name.removesuffix("s").title()} {tag_bracket}\n"
 
                 for key, value in block.items():
                     if isinstance(value, str):
                         value = value.replace("\n", carriage_return)  # noqa: PLW2901
                     block_text += f"{key}{data_seperator}{value}\n"
 
-                block_text += f"{tag_bracket} End {block_name.title()} {tag_bracket}\n"
+                block_text += f"{tag_bracket} End {block_name.removesuffix("s").title()} {tag_bracket}\n"
 
                 text += block_text
 
