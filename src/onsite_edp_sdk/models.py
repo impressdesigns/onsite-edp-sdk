@@ -269,20 +269,29 @@ class EDPDocument(BaseModel):
     products: list[Product] | None = Field(None)
     payment: Payment | None = Field(None)
 
-    def to_edp(self, tag_bracket: str = "----", data_seperator: str = ": ", _carriage_return: str = "<cr>") -> str:
+    def to_edp(self, tag_bracket: str = "----", data_seperator: str = ": ", carriage_return: str = "<cr>") -> str:
         """Serialize to EDP format."""
         data = self.model_dump(by_alias=True, exclude_unset=True)
         text = ""
 
         for block_name in data:
-            block_text = ""
-            block_text += f"{tag_bracket} Start {block_name.title()} {tag_bracket}\n"
+            block_name = block_name.removesuffix("s")  # noqa: PLW2901
 
-            for key, value in data[block_name].items():
-                block_text += f"{key}{data_seperator}{value}\n"
+            block_data = data[block_name]
+            if not isinstance(block_data, list):
+                block_data = [block_data]
 
-            block_text += f"{tag_bracket} End {block_name.title()} {tag_bracket}\n"
+            for block in block_data:
+                block_text = ""
+                block_text += f"{tag_bracket} Start {block_name.title()} {tag_bracket}\n"
 
-            text += block_text
+                for key, value in block.items():
+                    if isinstance(value, str):
+                        value = value.replace("\n", carriage_return)  # noqa: PLW2901
+                    block_text += f"{key}{data_seperator}{value}\n"
+
+                block_text += f"{tag_bracket} End {block_name.title()} {tag_bracket}\n"
+
+                text += block_text
 
         return text
