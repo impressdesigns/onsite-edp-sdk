@@ -13,8 +13,9 @@ class Order(BaseModel):
     # ID
     external_order_id: str = Field(serialization_alias="ExtOrderID")
     external_source: str | None = Field(None, serialization_alias="ExtSource")
-    date_external: str = Field(pattern=DATE_REGEX, serialization_alias="date_External")
-    order_type_id: int = Field(serialization_alias="id_OrderType")
+    # Per upstream documentation, date_external is required, but we're currently processing orders without it.
+    date_external: str|None = Field(None, pattern=DATE_REGEX, serialization_alias="date_External")
+    order_type_id: float = Field(serialization_alias="id_OrderType")
 
     # Details
     customer_purchase_order: str | None = Field(None, serialization_alias="CustomerPurchaseOrder")
@@ -264,7 +265,7 @@ class EDPDocument(BaseModel):
     customer: Customer
     contact: Contact | None = Field(None)
     designs: list[tuple[Design, list[DesignLocation]]] | None = Field(None)
-    products: Product | None = Field(None)
+    products: list[Product] | None = Field(None)
     payment: Payment | None = Field(None)
 
     def to_edp(self, tag_bracket: str = "----", data_seperator: str = ": ", _carriage_return: str = "<cr>") -> str:
