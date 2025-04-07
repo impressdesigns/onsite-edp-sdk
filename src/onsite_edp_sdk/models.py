@@ -265,7 +265,7 @@ class EDPDocument(BaseModel):
     customer: Customer
     contact: Contact | None = Field(None)
     designs: list[tuple[Design, list[DesignLocation]]] | None = Field(None)
-    products: Product | None = Field(None)
+    products: list[Product] | None = Field(None)
     payment: Payment | None = Field(None)
 
     def to_edp(self, tag_bracket: str = "----", data_seperator: str = ": ", _carriage_return: str = "<cr>") -> str:
