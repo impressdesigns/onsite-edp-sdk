@@ -14,7 +14,7 @@ class Order(BaseModel):
     external_order_id: str = Field(serialization_alias="ExtOrderID")
     external_source: str | None = Field(None, serialization_alias="ExtSource")
     # Per upstream documentation, date_external is required, but we're currently processing orders without it.
-    date_external: str|None = Field(None, pattern=DATE_REGEX, serialization_alias="date_External")
+    date_external: str | None = Field(None, pattern=DATE_REGEX, serialization_alias="date_External")
     order_type_id: float = Field(serialization_alias="id_OrderType")
 
     # Details
@@ -163,7 +163,8 @@ class DesignLocation(BaseModel):
     design_code: str | None = Field(None, serialization_alias="DesignCode")
 
     # Color
-    color: str = Field(serialization_alias="Color")
+    # Per upstream documentation, color is required, but we're currently processing orders without it.
+    color: str | None = Field(None, serialization_alias="Color")
     map: str | None = Field(None, serialization_alias="Map")
 
 
