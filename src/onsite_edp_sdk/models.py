@@ -24,7 +24,7 @@ class Order(BaseModel):
     customer_type: str | None = Field(None, serialization_alias="CustomerType")
     company_location_id: int | None = Field(None, serialization_alias="id_CompanyLocation")
     sales_status_id: int | None = Field(None, serialization_alias="id_SalesStatus")
-    status_allow_commishion: Literal[0, 1] | None = Field(None, serialization_alias="sts_CommishAllow")
+    status_allow_commission: Literal[0, 1] | None = Field(None, serialization_alias="sts_CommishAllow")
     hold_order_text: Literal["Yes", "No"] | None = Field(None, serialization_alias="HoldOrderText")
 
     # Dates
