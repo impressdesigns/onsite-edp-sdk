@@ -3,12 +3,20 @@
 from datetime import date
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel as PydanticBaseModel
+from pydantic import Field
 from pydantic.functional_serializers import PlainSerializer
 
 Date = Annotated[date, PlainSerializer(lambda value: value.strftime(r"%m/%d/%Y"))]
 IntBool = Annotated[bool, PlainSerializer(lambda value: 1 if value else 0)]
 YesNoBool = Annotated[bool, PlainSerializer(lambda value: "Yes" if value else "No")]
+
+
+class BaseModel(
+    PydanticBaseModel,
+    extra="forbid",
+):
+    """Base model for EDP documents."""
 
 
 class Order(BaseModel):
@@ -299,7 +307,7 @@ class EDPDocument(BaseModel):
         return text
 
 
-def block_to_text(block: type[BaseModel], block_title: str, tag_bracket: str, data_seperator: str, carriage_return: str) -> str:
+def block_to_text(block: BaseModel, block_title: str, tag_bracket: str, data_seperator: str, carriage_return: str) -> str:
     """Convert a block to text."""
     text = f"{tag_bracket} Start {block_title} {tag_bracket}\n"
     for key, value in block.model_dump(by_alias=True, exclude_unset=True).items():
