@@ -1,10 +1,14 @@
 """Blocks used by the EDP Document."""
 
-from typing import Literal
+from datetime import date
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
+from pydantic.functional_serializers import PlainSerializer
 
-DATE_REGEX = "[0-9]{2}/[0-9]{2}/[0-9]{4}|[0-9]{2}"
+Date = Annotated[date, PlainSerializer(lambda value: value.strftime(r"%m/%d/%Y"))]
+IntBool = Annotated[bool, PlainSerializer(lambda value: 1 if value else 0)]
+YesNoBool = Annotated[bool, PlainSerializer(lambda value: "Yes" if value else "No")]
 
 
 class Order(BaseModel):
@@ -14,7 +18,7 @@ class Order(BaseModel):
     external_order_id: str = Field(serialization_alias="ExtOrderID")
     external_source: str | None = Field(None, serialization_alias="ExtSource")
     # Per upstream documentation, date_external is required, but we're currently processing orders without it.
-    date_external: str | None = Field(None, pattern=DATE_REGEX, serialization_alias="date_External")
+    date_external: Date | None = Field(None, serialization_alias="date_External")
     order_type_id: float = Field(serialization_alias="id_OrderType")
 
     # Details
@@ -24,25 +28,25 @@ class Order(BaseModel):
     customer_type: str | None = Field(None, serialization_alias="CustomerType")
     company_location_id: int | None = Field(None, serialization_alias="id_CompanyLocation")
     sales_status_id: int | None = Field(None, serialization_alias="id_SalesStatus")
-    status_allow_commission: Literal[0, 1] | None = Field(None, serialization_alias="sts_CommishAllow")
-    hold_order_text: Literal["Yes", "No"] | None = Field(None, serialization_alias="HoldOrderText")
+    status_allow_commission: IntBool | None = Field(None, serialization_alias="sts_CommishAllow")
+    on_hold: YesNoBool | None = Field(None, serialization_alias="HoldOrderText")
 
     # Dates
-    date_order_placed: str = Field(pattern=DATE_REGEX, serialization_alias="date_OrderPlaced")
-    date_order_requested_to_ship: str | None = Field(None, pattern=DATE_REGEX, serialization_alias="date_OrderRequestedToShip")
-    date_order_drop_dead: str | None = Field(None, pattern=DATE_REGEX, serialization_alias="date_OrderDropDead")
+    date_order_placed: Date = Field(serialization_alias="date_OrderPlaced")
+    date_order_requested_to_ship: Date | None = Field(None, serialization_alias="date_OrderRequestedToShip")
+    date_order_drop_dead: Date | None = Field(None, serialization_alias="date_OrderDropDead")
 
     # Sales Tax
-    status_order_sales_tax_override: Literal[0, 1] | None = Field(None, serialization_alias="sts_Order_SalesTax_Override")
-    status_apply_sales_tax_1: Literal[0, 1] | None = Field(None, serialization_alias="sts_ApplySalesTax01")
-    status_apply_sales_tax_2: Literal[0, 1] | None = Field(None, serialization_alias="sts_ApplySalesTax02")
-    status_apply_sales_tax_3: Literal[0, 1] | None = Field(None, serialization_alias="sts_ApplySalesTax03")
-    status_apply_sales_tax_4: Literal[0, 1] | None = Field(None, serialization_alias="sts_ApplySalesTax04")
-    coa_account_sales_tax_1: Literal[0, 1] | None = Field(None, serialization_alias="coa_AccountSalesTax01")
-    coa_account_sales_tax_2: Literal[0, 1] | None = Field(None, serialization_alias="coa_AccountSalesTax02")
-    coa_account_sales_tax_3: Literal[0, 1] | None = Field(None, serialization_alias="coa_AccountSalesTax03")
-    coa_account_sales_tax_4: Literal[0, 1] | None = Field(None, serialization_alias="coa_AccountSalesTax04")
-    status_shipping_taxable: Literal[0, 1] | None = Field(None, serialization_alias="sts_ShippingTaxable")
+    status_order_sales_tax_override: IntBool | None = Field(None, serialization_alias="sts_Order_SalesTax_Override")
+    status_apply_sales_tax_1: IntBool | None = Field(None, serialization_alias="sts_ApplySalesTax01")
+    status_apply_sales_tax_2: IntBool | None = Field(None, serialization_alias="sts_ApplySalesTax02")
+    status_apply_sales_tax_3: IntBool | None = Field(None, serialization_alias="sts_ApplySalesTax03")
+    status_apply_sales_tax_4: IntBool | None = Field(None, serialization_alias="sts_ApplySalesTax04")
+    coa_account_sales_tax_1: IntBool | None = Field(None, serialization_alias="coa_AccountSalesTax01")
+    coa_account_sales_tax_2: IntBool | None = Field(None, serialization_alias="coa_AccountSalesTax02")
+    coa_account_sales_tax_3: IntBool | None = Field(None, serialization_alias="coa_AccountSalesTax03")
+    coa_account_sales_tax_4: IntBool | None = Field(None, serialization_alias="coa_AccountSalesTax04")
+    status_shipping_taxable: IntBool | None = Field(None, serialization_alias="sts_ShippingTaxable")
 
     # Shipping
     address_description: str | None = Field(None, serialization_alias="AddressDescription")
@@ -54,9 +58,9 @@ class Order(BaseModel):
     address_zip: str | None = Field(None, serialization_alias="AddressZip")
     address_country: str | None = Field(None, serialization_alias="AddressCountry")
     ship_method: str | None = Field(None, serialization_alias="ShipMethod")
-    status_shipping_taxable_field: Literal[0, 1] | None = Field(None, serialization_alias="sts_ShippingTaxableField")
+    status_shipping_taxable_field: IntBool | None = Field(None, serialization_alias="sts_ShippingTaxableField")
     cur_shipping: float | None = Field(None, serialization_alias="cur_Shipping")
-    status_order_shipping_address_add: Literal[0, 1] | None = Field(None, serialization_alias="sts_Order_ShipAddress_Add")
+    status_order_shipping_address_add: IntBool | None = Field(None, serialization_alias="sts_Order_ShipAddress_Add")
 
     # Notes
     notes_to_art: str | None = Field(None, serialization_alias="NotesToArt")
@@ -91,10 +95,10 @@ class Customer(BaseModel):
     address_country: str | None = Field(None, serialization_alias="AddressCountry")
 
     # Sales Tax
-    sts_apply_sales_tax_1: Literal[0, 1] | None = Field(None, serialization_alias="sts_ApplySalesTax01")
-    sts_apply_sales_tax_2: Literal[0, 1] | None = Field(None, serialization_alias="sts_ApplySalesTax02")
-    sts_apply_sales_tax_3: Literal[0, 1] | None = Field(None, serialization_alias="sts_ApplySalesTax03")
-    sts_apply_sales_tax_4: Literal[0, 1] | None = Field(None, serialization_alias="sts_ApplySalesTax04")
+    sts_apply_sales_tax_1: IntBool | None = Field(None, serialization_alias="sts_ApplySalesTax01")
+    sts_apply_sales_tax_2: IntBool | None = Field(None, serialization_alias="sts_ApplySalesTax02")
+    sts_apply_sales_tax_3: IntBool | None = Field(None, serialization_alias="sts_ApplySalesTax03")
+    sts_apply_sales_tax_4: IntBool | None = Field(None, serialization_alias="sts_ApplySalesTax04")
     coa_account_sale_tax_1: str | None = Field(None, serialization_alias="coa_AccountSalesTax01")
     coa_account_sale_tax_2: str | None = Field(None, serialization_alias="coa_AccountSalesTax02")
     coa_account_sale_tax_3: str | None = Field(None, serialization_alias="coa_AccountSalesTax03")
@@ -122,10 +126,10 @@ class Customer(BaseModel):
     custom_field_4: str | None = Field(None, serialization_alias="CustomField04")
     custom_field_5: str | None = Field(None, serialization_alias="CustomField05")
     custom_field_6: str | None = Field(None, serialization_alias="CustomField06")
-    custom_field_7: str | None = Field(None, pattern=DATE_REGEX, serialization_alias="CustomField07")
-    custom_field_8: str | None = Field(None, pattern=DATE_REGEX, serialization_alias="CustomField08")
-    custom_field_9: str | None = Field(None, pattern=DATE_REGEX, serialization_alias="CustomField09")
-    custom_field_10: str | None = Field(None, pattern=DATE_REGEX, serialization_alias="CustomField10")
+    custom_field_7: Date | None = Field(None, serialization_alias="CustomField07")
+    custom_field_8: Date | None = Field(None, serialization_alias="CustomField08")
+    custom_field_9: Date | None = Field(None, serialization_alias="CustomField09")
+    custom_field_10: Date | None = Field(None, serialization_alias="CustomField10")
 
 
 class Contact(BaseModel):
@@ -138,8 +142,8 @@ class Contact(BaseModel):
     phone: str | None = Field(None, serialization_alias="Phone")
     fax: str | None = Field(None, serialization_alias="Fax")
     email: str | None = Field(None, serialization_alias="Email")
-    status_enable_bulk_email: Literal[0, 1] | None = Field(None, serialization_alias="sts_EnableBulkEmail")
-    status_contact_add: Literal[0, 1] | None = Field(None, serialization_alias="sts_Contact_Add")
+    status_enable_bulk_email: IntBool | None = Field(None, serialization_alias="sts_EnableBulkEmail")
+    status_contact_add: IntBool | None = Field(None, serialization_alias="sts_Contact_Add")
 
 
 class Design(BaseModel):
@@ -186,24 +190,24 @@ class Product(BaseModel):
     size5_required: int | None = Field(None, serialization_alias="Size05_Req")
     size6_required: int | None = Field(None, serialization_alias="Size06_Req")
 
-    status_production_product_override: Literal[0, 1] | None = Field(None, serialization_alias="sts_Prod_Product_Override")
+    status_production_product_override: IntBool | None = Field(None, serialization_alias="sts_Prod_Product_Override")
     cur_unit_cost: float | None = Field(None, serialization_alias="cur_UnitCost")
-    status_enable_commission: Literal[0, 1] | None = Field(None, serialization_alias="sts_EnableCommission")
+    status_enable_commission: IntBool | None = Field(None, serialization_alias="sts_EnableCommission")
     product_class_id: int | None = Field(None, serialization_alias="id_ProductClass")
 
     # Sales Tax
-    status_production_sales_tax_override: Literal[0, 1] | None = Field(None, serialization_alias="sts_Prod_SalesTax_Override")
-    status_enable_tax_1: Literal[0, 1] | None = Field(None, serialization_alias="sts_EnableTax01")
-    status_enable_tax_2: Literal[0, 1] | None = Field(None, serialization_alias="sts_EnableTax02")
-    status_enable_tax_3: Literal[0, 1] | None = Field(None, serialization_alias="sts_EnableTax03")
-    status_enable_tax_4: Literal[0, 1] | None = Field(None, serialization_alias="sts_EnableTax04")
+    status_production_sales_tax_override: IntBool | None = Field(None, serialization_alias="sts_Prod_SalesTax_Override")
+    status_enable_tax_1: IntBool | None = Field(None, serialization_alias="sts_EnableTax01")
+    status_enable_tax_2: IntBool | None = Field(None, serialization_alias="sts_EnableTax02")
+    status_enable_tax_3: IntBool | None = Field(None, serialization_alias="sts_EnableTax03")
+    status_enable_tax_4: IntBool | None = Field(None, serialization_alias="sts_EnableTax04")
 
     # Secondary Units
-    status_production_secondary_units_override: Literal[0, 1] | None = Field(
+    status_production_secondary_units_override: IntBool | None = Field(
         None,
         serialization_alias="sts_Prod_SecondaryUnits_Override",
     )
-    status_use_secondary_units: Literal[0, 1] | None = Field(None, serialization_alias="sts_UseSecondaryUnits")
+    status_use_secondary_units: IntBool | None = Field(None, serialization_alias="sts_UseSecondaryUnits")
     units_quantity: int | None = Field(None, serialization_alias="Units_Qty")
     units_type: (
         Literal[
@@ -225,31 +229,31 @@ class Product(BaseModel):
     ) = Field(None, serialization_alias="Units_Type")
     units_area1: int | None = Field(None, serialization_alias="Units_Area1")
     units_area2: int | None = Field(None, serialization_alias="Units_Area2")
-    status_units_pricing: Literal[0, 1] | None = Field(None, serialization_alias="sts_UnitsPricing")
-    status_units_purchasing: Literal[0, 1] | None = Field(None, serialization_alias="sts_UnitsPurchasing")
+    status_units_pricing: IntBool | None = Field(None, serialization_alias="sts_UnitsPricing")
+    status_units_purchasing: IntBool | None = Field(None, serialization_alias="sts_UnitsPurchasing")
     status_units_purchasing_extra_percent: float | None = Field(None, serialization_alias="sts_UnitsPurchasingExtraPercent")
     status_units_purchasing_extra_round: Literal[1] | None = Field(None, serialization_alias="sts_UnitsPurchasingExtraRound")
 
     # Behavior
-    status_production_behavior_override: Literal[0, 1] | None = Field(None, serialization_alias="sts_Prod_Behavior_Override")
-    status_product_source_supplied: Literal[0, 1] | None = Field(None, serialization_alias="sts_ProductSource_Supplied")
-    status_product_source_purchase: Literal[0, 1] | None = Field(None, serialization_alias="sts_ProductSource_Purchase")
-    status_product_source_inventory: Literal[0, 1] | None = Field(None, serialization_alias="sts_ProductSource_Inventory")
+    status_production_behavior_override: IntBool | None = Field(None, serialization_alias="sts_Prod_Behavior_Override")
+    status_product_source_supplied: IntBool | None = Field(None, serialization_alias="sts_ProductSource_Supplied")
+    status_product_source_purchase: IntBool | None = Field(None, serialization_alias="sts_ProductSource_Purchase")
+    status_product_source_inventory: IntBool | None = Field(None, serialization_alias="sts_ProductSource_Inventory")
 
-    status_production_designs: Literal[0, 1] | None = Field(None, serialization_alias="sts_Production_Designs")
-    status_production_subcontract: Literal[0, 1] | None = Field(None, serialization_alias="sts_Production_Subcontract")
-    status_production_components: Literal[0, 1] | None = Field(None, serialization_alias="sts_Production_Components")
+    status_production_designs: IntBool | None = Field(None, serialization_alias="sts_Production_Designs")
+    status_production_subcontract: IntBool | None = Field(None, serialization_alias="sts_Production_Subcontract")
+    status_production_components: IntBool | None = Field(None, serialization_alias="sts_Production_Components")
 
-    status_storage_ship: Literal[0, 1] | None = Field(None, serialization_alias="sts_Storage_Ship")
-    status_storage_inventory: Literal[0, 1] | None = Field(None, serialization_alias="sts_Storage_Inventory")
+    status_storage_ship: IntBool | None = Field(None, serialization_alias="sts_Storage_Ship")
+    status_storage_inventory: IntBool | None = Field(None, serialization_alias="sts_Storage_Inventory")
 
-    status_invoicing_invoice: Literal[0, 1] | None = Field(None, serialization_alias="sts_Invoicing_Invoice")
+    status_invoicing_invoice: IntBool | None = Field(None, serialization_alias="sts_Invoicing_Invoice")
 
 
 class Payment(BaseModel):
     """Payment Block."""
 
-    date_payment: str = Field(pattern=DATE_REGEX, serialization_alias="date_Payment")
+    date_payment: Date = Field(serialization_alias="date_Payment")
     cur_payment: float | None = Field(None, serialization_alias="cur_Payment")
     payment_type: str | None = Field(None, serialization_alias="PaymentType")
     payment_number: str | None = Field(None, serialization_alias="PaymentNumber")
@@ -281,14 +285,14 @@ class EDPDocument(BaseModel):
 
             for block in block_data:
                 block_text = ""
-                block_text += f"{tag_bracket} Start {block_name.removesuffix("s").title()} {tag_bracket}\n"
+                block_text += f"{tag_bracket} Start {block_name.removesuffix('s').title()} {tag_bracket}\n"
 
                 for key, value in block.items():
                     if isinstance(value, str):
                         value = value.replace("\n", carriage_return)  # noqa: PLW2901
                     block_text += f"{key}{data_seperator}{value}\n"
 
-                block_text += f"{tag_bracket} End {block_name.removesuffix("s").title()} {tag_bracket}\n"
+                block_text += f"{tag_bracket} End {block_name.removesuffix('s').title()} {tag_bracket}\n"
 
                 text += block_text
 
