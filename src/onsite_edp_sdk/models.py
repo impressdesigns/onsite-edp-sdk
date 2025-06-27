@@ -275,25 +275,36 @@ class EDPDocument(BaseModel):
 
     def to_edp(self, tag_bracket: str = "----", data_seperator: str = ": ", carriage_return: str = "<cr>") -> str:
         """Serialize to EDP format."""
-        data = self.model_dump(by_alias=True, exclude_unset=True)
         text = ""
 
-        for block_name in data:
-            block_data = data[block_name]
-            if not isinstance(block_data, list):
-                block_data = [block_data]
-
-            for block in block_data:
-                block_text = ""
-                block_text += f"{tag_bracket} Start {block_name.removesuffix('s').title()} {tag_bracket}\n"
-
-                for key, value in block.items():
-                    if isinstance(value, str):
-                        value = value.replace("\n", carriage_return)  # noqa: PLW2901
-                    block_text += f"{key}{data_seperator}{value}\n"
-
-                block_text += f"{tag_bracket} End {block_name.removesuffix('s').title()} {tag_bracket}\n"
-
-                text += block_text
+        if self.order:
+            text += block_to_text(self.order, "Order", tag_bracket, data_seperator, carriage_return)
+        if self.customer:
+            text += block_to_text(self.customer, "Customer", tag_bracket, data_seperator, carriage_return)
+        if self.contact:
+            text += block_to_text(self.contact, "Contact", tag_bracket, data_seperator, carriage_return)
+        if self.designs:
+            for design, locations in self.designs:
+                text += block_to_text(design, "Design", tag_bracket, data_seperator, carriage_return)
+                text = text.removesuffix(f"{tag_bracket} End Design {tag_bracket}\n")
+                for location in locations:
+                    text += block_to_text(location, "Location", tag_bracket, data_seperator, carriage_return)
+                text += f"{tag_bracket} End Design {tag_bracket}\n"
+        if self.products:
+            for product in self.products:
+                text += block_to_text(product, "Product", tag_bracket, data_seperator, carriage_return)
+        if self.payment:
+            text += block_to_text(self.payment, "Payment", tag_bracket, data_seperator, carriage_return)
 
         return text
+
+
+def block_to_text(block: type[BaseModel], block_title: str, tag_bracket: str, data_seperator: str, carriage_return: str) -> str:
+    """Convert a block to text."""
+    text = f"{tag_bracket} Start {block_title} {tag_bracket}\n"
+    for key, value in block.model_dump(by_alias=True, exclude_unset=True).items():
+        if isinstance(value, str):
+            value = value.replace("\n", carriage_return)  # noqa: PLW2901
+        text += f"{key}{data_seperator}{value}\n"
+    text += f"{tag_bracket} End {block_title} {tag_bracket}\n"
+    return text

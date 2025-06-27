@@ -2,7 +2,7 @@
 
 from datetime import date
 
-from onsite_edp_sdk import Customer, EDPDocument, Order
+from onsite_edp_sdk import Customer, Design, DesignLocation, EDPDocument, Order
 
 SAMPLE_DOCUMENT = EDPDocument(
     order=Order(
@@ -16,6 +16,18 @@ SAMPLE_DOCUMENT = EDPDocument(
     customer=Customer(
         customer_id=1,
     ),
+    designs=[
+        (
+            Design(
+                design_name="Design1",
+            ),
+            [
+                DesignLocation(
+                    location="Test Location",
+                ),
+            ],
+        ),
+    ],
 )
 
 SAMPLE_OUTPUT = """\
@@ -30,6 +42,12 @@ date_OrderPlaced: 08/05/2022
 ---- Start Customer ----
 id_Customer: 1
 ---- End Customer ----
+---- Start Design ----
+DesignName: Design1
+---- Start Location ----
+Location: Test Location
+---- End Location ----
+---- End Design ----
 """
 
 
