@@ -281,38 +281,38 @@ class EDPDocument(BaseModel):
     products: list[Product] | None = Field(None)
     payment: Payment | None = Field(None)
 
-    def to_edp(self, tag_bracket: str = "----", data_seperator: str = ": ", carriage_return: str = "<cr>") -> str:
+    def to_edp(self, tag_bracket: str = "----", data_separator: str = ": ", carriage_return: str = "<cr>") -> str:
         """Serialize to EDP format."""
         text = ""
 
         if self.order:
-            text += block_to_text(self.order, "Order", tag_bracket, data_seperator, carriage_return)
+            text += block_to_text(self.order, "Order", tag_bracket, data_separator, carriage_return)
         if self.customer:
-            text += block_to_text(self.customer, "Customer", tag_bracket, data_seperator, carriage_return)
+            text += block_to_text(self.customer, "Customer", tag_bracket, data_separator, carriage_return)
         if self.contact:
-            text += block_to_text(self.contact, "Contact", tag_bracket, data_seperator, carriage_return)
+            text += block_to_text(self.contact, "Contact", tag_bracket, data_separator, carriage_return)
         if self.designs:
             for design, locations in self.designs:
-                text += block_to_text(design, "Design", tag_bracket, data_seperator, carriage_return)
+                text += block_to_text(design, "Design", tag_bracket, data_separator, carriage_return)
                 text = text.removesuffix(f"{tag_bracket} End Design {tag_bracket}\n")
                 for location in locations:
-                    text += block_to_text(location, "Location", tag_bracket, data_seperator, carriage_return)
+                    text += block_to_text(location, "Location", tag_bracket, data_separator, carriage_return)
                 text += f"{tag_bracket} End Design {tag_bracket}\n"
         if self.products:
             for product in self.products:
-                text += block_to_text(product, "Product", tag_bracket, data_seperator, carriage_return)
+                text += block_to_text(product, "Product", tag_bracket, data_separator, carriage_return)
         if self.payment:
-            text += block_to_text(self.payment, "Payment", tag_bracket, data_seperator, carriage_return)
+            text += block_to_text(self.payment, "Payment", tag_bracket, data_separator, carriage_return)
 
         return text
 
 
-def block_to_text(block: BaseModel, block_title: str, tag_bracket: str, data_seperator: str, carriage_return: str) -> str:
+def block_to_text(block: BaseModel, block_title: str, tag_bracket: str, data_separator: str, carriage_return: str) -> str:
     """Convert a block to text."""
     text = f"{tag_bracket} Start {block_title} {tag_bracket}\n"
     for key, value in block.model_dump(by_alias=True, exclude_unset=True).items():
         if isinstance(value, str):
             value = value.replace("\n", carriage_return)  # noqa: PLW2901
-        text += f"{key}{data_seperator}{value}\n"
+        text += f"{key}{data_separator}{value}\n"
     text += f"{tag_bracket} End {block_title} {tag_bracket}\n"
     return text
