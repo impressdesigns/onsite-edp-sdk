@@ -55,6 +55,9 @@ ignore = [
 "docs/*" = [
     "INP001", # (File `docs/conf.py` is part of an implicit namespace package. Add an `__init__.py`.) - Docs are not modules
 ]
+"tests/*" = [
+    "S101",   # (Use of `assert` detected) - Yes, that's the point
+]
 
 [tool.ruff.lint.isort]
 known-first-party = ["core"]
