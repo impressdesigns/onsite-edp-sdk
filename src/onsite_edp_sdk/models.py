@@ -176,7 +176,8 @@ class DesignLocation(BaseModel):
 
     # Color
     # Per upstream documentation, color is required, but we're currently processing orders without it.
-    color: str | None = Field(None, serialization_alias="Color")
+    # A list writes one ``Color`` line per colour, in order.
+    color: str | list[str] | None = Field(None, serialization_alias="Color")
     map: str | None = Field(None, serialization_alias="Map")
 
 
@@ -308,11 +309,11 @@ class EDPDocument(BaseModel):
 
 
 def block_to_text(block: BaseModel, block_title: str, tag_bracket: str, data_separator: str, carriage_return: str) -> str:
-    """Convert a block to text."""
+    """Convert a block to text, writing one line per item for a list value."""
     text = f"{tag_bracket} Start {block_title} {tag_bracket}\n"
     for key, value in block.model_dump(by_alias=True, exclude_unset=True).items():
-        if isinstance(value, str):
-            value = value.replace("\n", carriage_return)  # noqa: PLW2901
-        text += f"{key}{data_separator}{value}\n"
+        for item in value if isinstance(value, list) else [value]:
+            line = item.replace("\n", carriage_return) if isinstance(item, str) else item
+            text += f"{key}{data_separator}{line}\n"
     text += f"{tag_bracket} End {block_title} {tag_bracket}\n"
     return text
