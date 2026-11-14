@@ -1,6 +1,6 @@
 [project]
 name = "idi-onsite-edp-sdk"
-version = "0.1.0"
+version = "0.2.0"
 description = "ShopWorks OnSite EDP generator"
 authors = [
     { name = "Bradley Reynolds", email = "bradley.reynolds@impressdesigns.com" },
