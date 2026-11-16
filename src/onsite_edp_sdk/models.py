@@ -240,8 +240,12 @@ class Product(BaseModel):
     units_area2: int | None = Field(None, serialization_alias="Units_Area2")
     status_units_pricing: IntBool | None = Field(None, serialization_alias="sts_UnitsPricing")
     status_units_purchasing: IntBool | None = Field(None, serialization_alias="sts_UnitsPurchasing")
-    status_units_purchasing_extra_percent: float | None = Field(None, serialization_alias="sts_UnitsPurchasingExtraPercent")
-    status_units_purchasing_extra_round: Literal[1] | None = Field(None, serialization_alias="sts_UnitsPurchasingExtraRound")
+    status_units_purchasing_extra_percent: float | None = Field(
+        None, serialization_alias="sts_UnitsPurchasingExtraPercent"
+    )
+    status_units_purchasing_extra_round: Literal[1] | None = Field(
+        None, serialization_alias="sts_UnitsPurchasingExtraRound"
+    )
 
     # Behavior
     status_production_behavior_override: IntBool | None = Field(None, serialization_alias="sts_Prod_Behavior_Override")
@@ -308,7 +312,9 @@ class EDPDocument(BaseModel):
         return text
 
 
-def block_to_text(block: BaseModel, block_title: str, tag_bracket: str, data_separator: str, carriage_return: str) -> str:
+def block_to_text(
+    block: BaseModel, block_title: str, tag_bracket: str, data_separator: str, carriage_return: str
+) -> str:
     """Convert a block to text, writing one line per item for a list value."""
     text = f"{tag_bracket} Start {block_title} {tag_bracket}\n"
     for key, value in block.model_dump(by_alias=True, exclude_unset=True).items():

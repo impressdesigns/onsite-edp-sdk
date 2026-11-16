@@ -1,10 +1,5 @@
 version: 2
 updates:
-  - package-ecosystem: devcontainers
-    directory: /
-    schedule:
-      interval: monthly
-
   - package-ecosystem: github-actions
     directory: /
     schedule:
@@ -13,6 +8,8 @@ updates:
       ci-dependencies:
         patterns:
           - "*"
+    cooldown:
+      default-days: 7
 
   - package-ecosystem: uv
     directory: /
@@ -22,3 +19,16 @@ updates:
       python-dependencies:
         patterns:
           - "*"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: pre-commit
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      pre-commit-dependencies:
+        patterns:
+          - "*"
+    cooldown:
+      default-days: 7
